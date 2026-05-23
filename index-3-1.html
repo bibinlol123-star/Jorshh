@@ -1,0 +1,3857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jorshh Store - Gaming Tools & Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-deep: #060c1a;
+    --bg-card: #0d1a2e;
+    --bg-card2: #0a1525;
+    --accent-cyan: #00e5ff;
+    --accent-pink: #ff2d78;
+    --accent-purple: #a855f7;
+    --text-white: #f0f6ff;
+    --text-muted: #7a9bbf;
+    --border-glow: rgba(0, 229, 255, 0.2);
+    --border-card: rgba(0, 229, 255, 0.1);
+    --admin-gold: #ffd700;
+  }
+  body {
+    background: var(--bg-deep);
+    color: var(--text-white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===================== HEADER ===================== */
+  header {
+    background: rgba(6, 12, 26, 0.97);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: .05em;
+    cursor: pointer;
+  }
+  nav { display: flex; gap: 1.75rem; align-items: center; }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color .2s;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  nav a:hover { color: var(--accent-cyan); }
+  
+  .btn-login {
+    background: transparent;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    padding: .4rem 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    transition: all .2s;
+    text-transform: uppercase;
+  }
+  .btn-login:hover { background: var(--accent-cyan); color: #000; }
+
+  .user-badge {
+    display: none;
+    align-items: center;
+    gap: .6rem;
+    cursor: default;
+  }
+  .user-badge.show { display: flex; }
+  
+  .user-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: .7rem;
+    font-weight: 800;
+    color: #000;
+    text-transform: uppercase;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+  }
+  .user-avatar.is-admin {
+    border-color: var(--admin-gold);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  
+  .user-name {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: .06em;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .google-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    font-size: .6rem;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: .1rem .35rem;
+    border-radius: 3px;
+    color: var(--text-muted);
+    letter-spacing: .05em;
+  }
+  .google-badge svg { width: 10px; height: 10px; }
+  
+  .admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    font-size: .6rem;
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid var(--admin-gold);
+    padding: .1rem .35rem;
+    border-radius: 3px;
+    color: var(--admin-gold);
+    letter-spacing: .05em;
+  }
+  .reseller-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    font-size: .6rem;
+    background: rgba(74, 122, 255, 0.12);
+    border: 1px solid rgba(74, 122, 255, 0.35);
+    padding: .1rem .35rem;
+    border-radius: 3px;
+    color: #aecbff;
+    letter-spacing: .05em;
+  }
+
+  .btn-logout, .btn-admin-panel {
+    background: transparent;
+    border: 1px solid rgba(255,45,120,.4);
+    color: var(--accent-pink);
+    padding: .3rem .75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    transition: all .2s;
+    margin-left: 5px;
+  }
+  .btn-admin-panel {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    display: none;
+  }
+  .btn-logout:hover { background: rgba(255,45,120,.15); }
+  .btn-admin-panel:hover { background: rgba(0,229,255,.15); }
+
+  /* ===================== HERO BANNER SLIDER ===================== */
+  .hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #060c1a;
+    border-bottom: 1px solid var(--border-glow);
+  }
+  .hero-slides {
+    display: flex;
+    transition: transform .5s ease;
+  }
+  .hero-slide {
+    min-width: 100%;
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+  @media (max-width: 768px) { .hero-slide { height: 200px; } }
+  .hero-slide-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(.85);
+    transition: transform 8s ease;
+  }
+  .hero-slide:hover .hero-slide-bg { transform: scale(1.03); }
+  .hero-slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(6,12,26,.7) 0%, rgba(0,229,255,.05) 100%);
+  }
+  .hero-slide-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem 1.5rem 1.25rem;
+  }
+  .hero-slide-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    background: rgba(0,229,255,.15);
+    border: 1px solid rgba(0,229,255,.4);
+    color: var(--accent-cyan);
+    padding: .25rem .75rem;
+    border-radius: 20px;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: .65rem;
+    width: fit-content;
+  }
+  .hero-slide-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  }
+  .hero-slide-title span {
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-dots {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .hero-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.35);
+    cursor: pointer;
+    transition: all .3s;
+  }
+  .hero-dot.active {
+    background: var(--accent-cyan);
+    width: 18px;
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(0,229,255,.6);
+  }
+
+  /* ===================== TICKER ===================== */
+  .ticker-wrap {
+    background: rgba(0,229,255,.07);
+    border-top: 1px solid rgba(0,229,255,.15);
+    border-bottom: 1px solid rgba(0,229,255,.15);
+    padding: .55rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: tickerScroll 22s linear infinite;
+  }
+  .ticker-track:hover { animation-play-state: paused; }
+  @keyframes tickerScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 0 2rem;
+  }
+  .ticker-sep {
+    color: var(--accent-pink);
+    font-size: .7rem;
+  }
+
+  /* ===================== SEARCH BAR ===================== */
+  .search-wrap {
+    padding: 1.25rem 1rem .5rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(0,229,255,.2);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .search-box:focus-within {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0,229,255,.1);
+  }
+  .search-box svg {
+    margin-left: 1rem;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+  .search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    padding: .8rem .75rem;
+  }
+  .search-input::placeholder { color: #3a5a7a; }
+  .search-btn {
+    background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+    border: none;
+    color: #000;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    padding: .8rem 1.4rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: filter .2s;
+    flex-shrink: 0;
+  }
+  .search-btn:hover { filter: brightness(1.1); }
+
+  /* ===================== FILTER BAR (new pill style) ===================== */
+  .filter-bar {
+    padding: .75rem 1rem 1rem;
+    display: flex;
+    gap: .55rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.1);
+    color: var(--text-muted);
+    padding: .45rem 1.1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: all .2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .filter-btn:hover { border-color: rgba(0,229,255,.4); color: var(--text-white); }
+  .filter-btn.active {
+    background: var(--accent-cyan);
+    border-color: var(--accent-cyan);
+    color: #000;
+    font-weight: 900;
+    box-shadow: 0 4px 14px rgba(0,229,255,.35);
+  }
+
+  /* ===================== MAIN & SECTION TITLE ===================== */
+  main { padding: 0 1rem 5rem; max-width: 700px; margin: 0 auto; min-height: 60vh; }
+
+  .view-section { display: none; animation: fadeIn 0.4s ease; }
+  .view-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-top: 1.25rem;
+  }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-white);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+  }
+  .section-title::before { display: none; }
+  .count-badge {
+    background: rgba(0,229,255,.1);
+    border: 1px solid rgba(0,229,255,.25);
+    color: var(--accent-cyan);
+    padding: .15rem .55rem;
+    border-radius: 2px;
+    font-size: .75rem;
+    font-weight: 700;
+  }
+
+  /* ===================== PRODUCT GRID (new style) ===================== */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .65rem;
+  }
+  @media (max-width: 400px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===================== PRODUCT CARD (new style) ===================== */
+  .product-card {
+    background: #0d1525;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all .25s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    text-align: left;
+  }
+  .product-card:hover {
+    border-color: rgba(0,229,255,.35);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(0,229,255,.1);
+  }
+  .card-img {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #111e33;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: #fff;
+    overflow: hidden;
+    border: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, #0d1a2e, #1a2e4a);
+  }
+  .card-img-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+  }
+  .platform-badge {
+    position: absolute;
+    top: 7px; left: 7px;
+    padding: .18rem .5rem;
+    border-radius: 6px;
+    font-size: .58rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .badge-android { background: #1a4027; color: #4ade80; border: 1px solid #2a6040; }
+  .badge-ios     { background: #162a4a; color: #60a8de; border: 1px solid #224070; }
+  .badge-pc      { background: #2a1a4a; color: #b87ade; border: 1px solid #40286a; }
+  .badge-reseller{ background: #4a2a10; color: #de9a5c; border: 1px solid #6a4020; }
+  .card-body {
+    padding: .6rem .65rem .65rem;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+  }
+  .card-title {
+    font-size: .72rem;
+    font-weight: 800;
+    color: var(--text-white);
+    letter-spacing: .02em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  .btn-buy {
+    width: 100%;
+    background: rgba(21,101,192,.25);
+    border: 1px solid rgba(21,101,192,.5);
+    color: #60a8ff;
+    padding: .45rem .3rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 800;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+  }
+  .btn-buy:hover {
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-color: #1565c0;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(21,101,192,.4);
+  }
+
+  /* ===================== BENEFIT SECTION ===================== */
+  .benefit-section {
+    padding: 3rem 2.5rem;
+    background: rgba(0,0,0,.2);
+    border-top: 1px solid var(--border-card);
+  }
+  .benefit-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--text-white);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .benefit-card {
+    background: linear-gradient(145deg, #0d1a2e, #091525);
+    border: 1px solid rgba(0,229,255,.1);
+    border-radius: 18px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: .75rem;
+    transition: all .25s;
+  }
+  .benefit-card:hover {
+    border-color: rgba(0,229,255,.3);
+    transform: translateY(-3px);
+  }
+  .benefit-icon {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .benefit-card-title {
+    font-size: .92rem;
+    font-weight: 800;
+    color: var(--text-white);
+    letter-spacing: .04em;
+  }
+  .benefit-card-desc {
+    font-size: .78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) {
+    .benefit-section { padding: 2rem 1.25rem; }
+    .benefit-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+    .benefit-card { padding: 1.2rem .75rem; }
+  }
+
+  /* ===================== ADMIN DASHBOARD STYLES ===================== */
+  .admin-dashboard { display: flex; flex-direction: column; gap: 2rem; }
+  
+  .admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .admin-stat-card {
+    background: rgba(13, 26, 46, 0.6);
+    border: 1px solid var(--border-card);
+    padding: 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--accent-cyan);
+  }
+  .admin-stat-card:nth-child(2)::after { background: var(--accent-purple); }
+  .admin-stat-card:nth-child(3)::after { background: var(--accent-pink); }
+  
+  .admin-stat-label { font-size: .8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; }
+  .admin-stat-value { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: 700; color: var(--text-white); }
+  
+  .admin-table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .admin-table-header {
+    padding: 1rem 1.5rem;
+    background: rgba(0,0,0,.2);
+    border-bottom: 1px solid var(--border-card);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .admin-table-title { font-family: 'Orbitron'; font-weight: 600; color: var(--accent-cyan); letter-spacing: .05em; }
+  .table-responsive { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 600px; }
+  th { 
+    text-align: left; padding: 1rem 1.5rem; 
+    font-size: .8rem; color: var(--text-muted); 
+    text-transform: uppercase; letter-spacing: .1em; 
+    border-bottom: 1px solid var(--border-card);
+    background: rgba(0,0,0,.1);
+  }
+  td { 
+    padding: 1rem 1.5rem; 
+    font-size: .9rem; color: var(--text-white); 
+    border-bottom: 1px solid var(--border-card);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,229,255,.05); }
+  
+  /* Tombol Hapus Baris */
+  .btn-delete {
+    background: rgba(255, 45, 120, 0.12);
+    border: 1px solid rgba(255, 45, 120, 0.35);
+    color: var(--accent-pink);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 rgba(255,255,255,0);
+  }
+  .btn-delete:hover {
+    background: var(--accent-pink);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(255,45,120,.18);
+  }
+  .btn-delete:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255,45,120,.15);
+  }
+
+  .confirm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+  }
+  .confirm-modal-overlay.open {
+    display: flex;
+  }
+  .confirm-modal {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: min(420px, calc(100% - 2rem));
+    box-shadow: 0 24px 80px rgba(0,0,0,.3);
+    text-align: center;
+  }
+  .confirm-modal h3 {
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', monospace;
+    color: var(--text-white);
+    font-size: 1.05rem;
+  }
+  .confirm-modal p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+  .confirm-actions {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-cancel,
+  .btn-confirm-delete {
+    min-width: 140px;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-cancel {
+    background: rgba(255,255,255,.07);
+    color: var(--text-muted);
+    border-color: rgba(255,255,255,.12);
+  }
+  .btn-cancel:hover {
+    background: rgba(255,255,255,.14);
+  }
+  .btn-confirm-delete {
+    background: linear-gradient(135deg, #ff2d78, #ff416c);
+    color: #fff;
+    border-color: transparent;
+  }
+  .btn-confirm-delete:hover {
+    filter: brightness(1.05);
+  }
+
+  .status-badge {
+    padding: .2rem .6rem;
+    border-radius: 3px;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .status-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+  .status-pending { background: rgba(255, 215, 0, 0.15); color: #fde047; border: 1px solid rgba(255, 215, 0, 0.3); }
+  .status-expired { background: rgba(255, 45, 120, 0.15); color: #ff6b9d; border: 1px solid rgba(255, 45, 120, 0.3); }
+
+  /* ===================== NEW ORDER FORM ===================== */
+  .order-step-header {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    margin-bottom: .75rem;
+  }
+  .order-step-num {
+    width: 28px; height: 28px;
+    background: #1565c0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .order-step-title {
+    font-family: 'Orbitron', monospace;
+    font-size: .85rem;
+    font-weight: 800;
+    color: var(--text-white);
+    letter-spacing: .1em;
+  }
+  .order-step-box {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    padding: .75rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .order-plain-input {
+    width: 100%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    color: var(--text-white);
+    padding: .75rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem;
+    font-weight: 500;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .order-plain-input:focus { border-color: rgba(0,229,255,.4); }
+  .order-plain-input::placeholder { color: #3a5a7a; }
+  .paket-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem;
+  }
+  .paket-card {
+    background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    padding: .85rem 1rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .paket-card:hover { border-color: rgba(0,140,255,.4); }
+  .paket-card.active {
+    background: rgba(21,101,192,.2);
+    border-color: #1565c0;
+  }
+  .paket-card-name {
+    font-size: .95rem;
+    font-weight: 800;
+    color: var(--text-white);
+    margin-bottom: .3rem;
+  }
+  .paket-card-price {
+    font-size: .88rem;
+    font-weight: 700;
+    color: #4ade80;
+  }
+  .paket-card-old {
+    font-size: .78rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    margin-right: .3rem;
+  }
+  .order-bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .btn-beli-sekarang {
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border: none;
+    color: #fff;
+    padding: .75rem 1.5rem;
+    border-radius: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 800;
+    font-size: .95rem;
+    letter-spacing: .08em;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 4px 16px rgba(21,101,192,.4);
+  }
+  .btn-beli-sekarang:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(21,101,192,.55);
+  }
+
+  /* ===================== RESELLER MANAGEMENT IN ADMIN ===================== */
+  .reseller-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ===================== CS FLOAT ===================== */
+  .cs-float {
+    position: fixed;
+    bottom: 1.75rem; right: 1.75rem;
+    background: linear-gradient(135deg, #00b4cc, #0077aa);
+    color: #fff;
+    border: none;
+    padding: .75rem 1.4rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    letter-spacing: .08em;
+    box-shadow: 0 4px 22px rgba(0,180,204,.45);
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    transition: all .25s;
+    z-index: 999;
+  }
+  .cs-float:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,180,204,.55); }
+  .cs-dot {
+    width: 8px; height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .6; transform: scale(1.35); }
+  }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    background: rgba(6,12,26,.9);
+    border-top: 1px solid var(--border-card);
+    padding: 2.5rem 2.5rem;
+    text-align: center;
+  }
+  footer .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: .75rem;
+  }
+  footer p { color: var(--text-muted); font-size: .9rem; }
+  .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .85rem;
+    letter-spacing: .06em;
+    transition: color .2s;
+  }
+  .footer-links a:hover { color: var(--accent-cyan); }
+
+  /* ===================== MODAL OVERLAY ===================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    position: relative;
+    animation: modalIn .3s ease;
+    overflow: hidden;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-glow {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink), var(--accent-purple));
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color .2s;
+    z-index: 2;
+  }
+  .modal-close:hover { color: var(--accent-pink); }
+  .modal-content { padding: 2rem 1.75rem 1.75rem; max-height: calc(90vh - 60px); overflow-y: auto; }
+  .modal-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    color: var(--text-white);
+  }
+
+  /* Form Styles */
+  .form-group { margin-bottom: 1rem; }
+  .form-group label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .35rem;
+  }
+  .form-input {
+    width: 100%;
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border-card);
+    color: var(--text-white);
+    padding: .6rem .85rem;
+    border-radius: 5px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(0,229,255,.1); }
+  .form-input::placeholder { color: #3a5a7a; }
+  .form-input.error { border-color: var(--accent-pink); }
+  .form-error {
+    font-size: .75rem;
+    color: var(--accent-pink);
+    margin-top: .3rem;
+    display: none;
+  }
+  .form-error.show { display: block; }
+  .form-select {
+    width: 100%;
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border-card);
+    color: var(--text-white);
+    padding: .6rem .85rem;
+    border-radius: 5px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    transition: border-color .2s;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%237a9bbf'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .85rem center;
+  }
+  .form-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(0,229,255,.1); }
+  .form-select option { background: #0d1a2e; color: var(--text-white); }
+  .btn-submit {
+    width: 100%;
+    padding: .7rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    transition: all .25s;
+    margin-top: .5rem;
+  }
+  .btn-submit.cyan { background: linear-gradient(135deg, var(--accent-cyan), #0099cc); color: #000; }
+  .btn-submit.cyan:hover { box-shadow: 0 6px 24px rgba(0,229,255,.35); transform: translateY(-1px); }
+  .btn-submit.pink { background: linear-gradient(135deg, var(--accent-pink), #cc1155); color: #fff; }
+  .btn-submit.pink:hover { box-shadow: 0 6px 24px rgba(255,45,120,.35); transform: translateY(-1px); }
+  .btn-submit.green { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+  .btn-submit.green:hover { box-shadow: 0 6px 24px rgba(34,197,94,.35); transform: translateY(-1px); }
+  .modal-switch {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: .88rem;
+    color: var(--text-muted);
+  }
+  .modal-switch a { color: var(--accent-cyan); text-decoration: none; font-weight: 700; cursor: pointer; }
+  .modal-switch a:hover { text-decoration: underline; }
+
+  /* Divider & Google */
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin: 1.25rem 0;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border-card);
+  }
+  .auth-divider span { font-size: .75rem; color: var(--text-muted); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+  
+  .btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    padding: .65rem 1rem;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06);
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: .08em;
+    transition: all .2s;
+  }
+  .btn-google:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); transform: translateY(-1px); }
+  .btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Auth Tabs */
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-card);
+  }
+  .auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: .65rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .auth-tab:hover { color: var(--text-white); }
+  .auth-tab.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+
+  /* Order Form */
+  .order-product-info {
+    background: rgba(0,0,0,.3);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .order-product-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', monospace; font-weight: 800; font-size: .9rem; flex-shrink: 0; }
+  .order-product-name { font-weight: 700; font-size: .9rem; color: var(--text-white); letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; }
+  .order-product-platform { font-size: .72rem; color: var(--text-muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .order-total { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-top: 1px solid var(--border-card); margin-top: .75rem; }
+  .order-total-label { font-size: .85rem; color: var(--text-muted); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .order-total-price { font-family: 'Orbitron', monospace; font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan); }
+  .payment-methods { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .25rem; }
+  .payment-chip {
+    padding: .35rem .75rem;
+    border-radius: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--border-card);
+    background: rgba(255,255,255,.03);
+    color: var(--text-muted);
+    transition: all .2s;
+  }
+  .qris-header {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-white);
+    margin-bottom: 1rem;
+  }
+  .qris-info {
+    display: grid;
+    gap: .5rem;
+    margin-bottom: 1rem;
+  }
+  .qris-info-item {
+    color: var(--text-muted);
+    font-size: .9rem;
+  }
+  .qris-box {
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border-card);
+    border-radius: 14px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .qris-box img {
+    width: 260px;
+    height: 260px;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+  .qris-note {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-bottom: 1rem;
+  }
+  .payment-chip:hover { border-color: rgba(0,229,255,.4); color: var(--text-white); }
+  .payment-chip:hover { border-color: rgba(0,229,255,.4); color: var(--text-white); }
+
+  .btn-submit.red { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+  .btn-submit.red:hover { box-shadow: 0 6px 24px rgba(239,68,68,.35); transform: translateY(-1px); }
+
+  /* ===================== NEW INVOICE PAYMENT UI ===================== */
+
+  /* Progress Steps */
+  .inv-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1.5rem;
+  }
+  .inv-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    position: relative;
+  }
+  .inv-step-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    border: 2px solid rgba(255,255,255,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    transition: all .3s;
+    position: relative;
+    z-index: 1;
+  }
+  .inv-step.active .inv-step-circle {
+    background: linear-gradient(135deg, #00e5ff22, #00e5ff11);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 4px rgba(0,229,255,.12), 0 0 20px rgba(0,229,255,.2);
+  }
+  .inv-step-label {
+    font-size: .65rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .inv-step.active .inv-step-label { color: var(--accent-cyan); }
+  .inv-step-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,.1);
+    min-width: 40px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .inv-step-line.done {
+    background: linear-gradient(90deg, var(--accent-cyan), rgba(0,229,255,.3));
+  }
+
+  /* Waiting Card */
+  .payment-waiting-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: .5rem 0;
+  }
+
+  /* Status Header */
+  .inv-status-header {
+    background: linear-gradient(135deg, rgba(0,229,255,.08), rgba(0,229,255,.03));
+    border: 1px solid rgba(0,229,255,.2);
+    border-radius: 18px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+  }
+  .inv-status-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .inv-status-sub {
+    font-size: .82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* New Timer */
+  .inv-timer-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+  }
+  .inv-timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .2rem;
+  }
+  .inv-timer-digit {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    background: rgba(0,229,255,.1);
+    border: 1px solid rgba(0,229,255,.25);
+    border-radius: 10px;
+    min-width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: .02em;
+    text-shadow: 0 0 20px rgba(0,229,255,.5);
+  }
+  .inv-timer-label {
+    font-size: .6rem;
+    color: var(--text-muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .inv-timer-colon {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    margin-bottom: 18px;
+    opacity: .7;
+    animation: blinkColon 1s step-start infinite;
+  }
+  @keyframes blinkColon { 0%, 100% { opacity: .7; } 50% { opacity: .15; } }
+
+  /* QR Section */
+  .payment-qrcode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .inv-qr-frame {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  }
+  .payment-qrcode img {
+    width: 220px;
+    height: 220px;
+    display: block;
+    border-radius: 10px;
+    transition: opacity 0.3s ease;
+  }
+  .inv-pay-btn {
+    width: 100%;
+    padding: .85rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+    color: #000;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    transition: all .25s;
+    box-shadow: 0 4px 20px rgba(0,229,255,.3);
+  }
+  .inv-pay-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,229,255,.45);
+  }
+  .qris-note {
+    font-size: .75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: -.25rem;
+  }
+
+  /* Invoice Detail Card */
+  .payment-details-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .inv-detail-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .payment-detail-title {
+    font-family: 'Orbitron', monospace;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .inv-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .75rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .inv-detail-row:last-child { border-bottom: none; }
+  .inv-detail-key {
+    font-size: .82rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .inv-detail-val {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text-white);
+    text-align: right;
+    max-width: 60%;
+    word-break: break-all;
+  }
+  .inv-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(0,229,255,.05);
+    border-top: 1px solid rgba(0,229,255,.15);
+  }
+  .inv-total-label {
+    font-size: .9rem;
+    font-weight: 800;
+    color: var(--text-white);
+  }
+  .inv-total-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .inv-copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--accent-cyan);
+    font-size: .85rem;
+    padding: 0;
+    opacity: .7;
+    transition: opacity .2s;
+  }
+  .inv-copy-btn:hover { opacity: 1; }
+
+  /* License Card */
+  .payment-license-card {
+    background: rgba(0,229,255,.05);
+    border: 1px solid rgba(0,229,255,.2);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+  }
+  .payment-license-title {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: .65rem;
+  }
+  .payment-license-value {
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    background: rgba(0,0,0,.3);
+    border: 1px solid rgba(0,229,255,.15);
+    border-radius: 10px;
+    color: var(--text-white);
+    font-family: 'Orbitron', monospace;
+    font-size: .82rem;
+    text-align: center;
+    padding: .65rem 1rem;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  /* Info Grid */
+  .payment-info-grid {
+    display: none; /* merged into detail card */
+  }
+  .payment-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    color: var(--text-muted);
+    font-size: .85rem;
+  }
+
+  /* Status Pills */
+  .status-pill {
+    padding: .25rem .75rem;
+    border-radius: 8px;
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    display: inline-block;
+  }
+  .status-pending { background: rgba(245,197,11,.18); color: #f5c50b; border: 1px solid rgba(245,197,11,.3); }
+  .status-expired { background: rgba(239,68,68,.15); color: #ef4444; border: 1px solid rgba(239,68,68,.3); }
+  .status-success-pill { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+  .payment-chip.active { border-color: var(--accent-cyan); background: rgba(0,229,255,.12); color: var(--accent-cyan); }
+
+  /* ===================== GOOGLE SIMULATION MODAL ===================== */
+  .google-sim-box {
+    background: #1a1a2e;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    padding: 1.75rem;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    animation: modalIn .3s ease;
+  }
+  .google-sim-logo { display: flex; align-items: center; justify-content: center; gap: .3rem; margin-bottom: 1.25rem; }
+  .google-sim-logo span { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+  .google-sim-title { font-size: 1.05rem; font-weight: 700; color: var(--text-white); margin-bottom: .25rem; }
+  .google-sim-sub { font-size: .82rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5; }
+  .google-sim-input {
+    width: 100%;
+    background: rgba(0,0,0,.4);
+    border: 1px solid rgba(255,255,255,.12);
+    color: var(--text-white);
+    padding: .65rem .9rem;
+    border-radius: 6px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    outline: none;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+  .google-sim-input:focus { border-color: #4285f4; }
+  .google-sim-input::placeholder { color: #3a5a7a; }
+  .google-sim-input.error { border-color: var(--accent-pink); }
+  .google-sim-err { font-size: .72rem; color: var(--accent-pink); margin-top: -.55rem; margin-bottom: .55rem; text-align: left; display: none; }
+  .google-sim-err.show { display: block; }
+  .btn-google-sim {
+    width: 100%;
+    padding: .65rem;
+    border: none;
+    border-radius: 20px;
+    background: #4285f4;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .92rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: .25rem;
+  }
+  .btn-google-sim:hover { background: #3b78db; transform: translateY(-1px); }
+  .google-sim-note { margin-top: 1rem; font-size: .68rem; color: #3a5a7a; line-height: 1.5; }
+
+  /* ===================== TOAST ===================== */
+  .toast-container {
+    position: fixed;
+    top: 80px;
+    right: 1.5rem;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .toast {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: 6px;
+    padding: .75rem 1.1rem;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    min-width: 260px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.5);
+    animation: toastIn .35s ease, toastOut .35s ease 2.5s forwards;
+  }
+  .toast.success { border-left: 3px solid #22c55e; }
+  .toast.error   { border-left: 3px solid var(--accent-pink); }
+  .toast.info    { border-left: 3px solid var(--accent-cyan); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1.25rem; }
+    nav a { display: none; }
+    .user-name { display: none; }
+    .hero { padding: 2.5rem 1.25rem; }
+    .stats-bar { gap: 2rem; flex-wrap: wrap; }
+    .filter-bar { padding: 1rem 1.25rem; }
+    main { padding: 1.25rem 1.25rem 4rem; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .modal-box { max-width: 360px; }
+    .modal-content { padding: 1.5rem 1.25rem 1.5rem; }
+    .google-sim-box { padding: 1.25rem; }
+    .reseller-form-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===================== WARNING POPUP ===================== */
+  .warning-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .warning-box {
+    background: linear-gradient(145deg, #0d1a2e, #0a1220);
+    border: 1px solid rgba(255,100,0,.25);
+    border-radius: 16px;
+    padding: 2rem 1.75rem;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn .4s ease;
+    position: relative;
+  }
+  .warning-header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,100,0,.2);
+  }
+  .warning-icon-big {
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 10px rgba(255,100,0,.6));
+  }
+  .warning-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ff6b00;
+    letter-spacing: .1em;
+    text-shadow: 0 0 20px rgba(255,107,0,.4);
+  }
+  .warning-subtitle {
+    font-size: .82rem;
+    color: var(--text-muted);
+    margin-top: .2rem;
+    letter-spacing: .04em;
+  }
+  .warning-rules {
+    display: flex;
+    flex-direction: column;
+    gap: .85rem;
+    margin-bottom: 1.5rem;
+  }
+  .warning-rule {
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+  .warning-rule.red   { background: rgba(255,45,45,.08);  border-left: 3px solid #ff2d2d; }
+  .warning-rule.blue  { background: rgba(0,140,255,.08);  border-left: 3px solid #0099ff; }
+  .warning-rule.orange{ background: rgba(255,160,0,.08);  border-left: 3px solid #ffa000; }
+  .warning-rule-title {
+    font-size: .82rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+  }
+  .warning-rule.red    .warning-rule-title { color: #ff6b6b; }
+  .warning-rule.blue   .warning-rule-title { color: #60b8ff; }
+  .warning-rule.orange .warning-rule-title { color: #ffbe45; }
+  .warning-rule-desc {
+    font-size: .83rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .warning-rule-desc strong { color: var(--text-white); }
+  .warning-agree-text {
+    font-size: .75rem;
+    color: #3a5a7a;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .btn-warning-agree {
+    width: 100%;
+    padding: .85rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff4500, #cc2200);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .25s;
+    box-shadow: 0 6px 24px rgba(255,69,0,.3);
+  }
+  .btn-warning-agree:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255,69,0,.45);
+  }
+  .btn-warning-agree:active { transform: scale(.98); }
+
+  /* ===================== HAMBURGER MENU ===================== */
+  .hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: .4rem;
+    flex-direction: column;
+    gap: 5px;
+    margin-left: .5rem;
+  }
+  .hamburger-btn span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-white);
+    border-radius: 2px;
+    transition: all .3s ease;
+  }
+  @media (max-width: 768px) {
+    .hamburger-btn { display: flex; }
+  }
+
+  /* Sidebar Overlay */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Sidebar Panel */
+  .sidebar-panel {
+    position: fixed;
+    top: 0; right: 0;
+    width: min(340px, 90vw);
+    height: 100vh;
+    background: #060c1a;
+    border-left: 1px solid rgba(0,229,255,.15);
+    z-index: 1600;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .sidebar-panel.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,229,255,.1);
+  }
+  .sidebar-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    letter-spacing: .15em;
+  }
+  .sidebar-close {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    color: var(--text-muted);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+  }
+  .sidebar-close:hover { color: var(--accent-pink); border-color: rgba(255,45,120,.3); }
+
+  .sidebar-nav {
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    flex: 1;
+  }
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    padding: .9rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.05);
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    transition: all .2s;
+  }
+  .sidebar-nav-item:hover {
+    background: rgba(0,229,255,.07);
+    border-color: rgba(0,229,255,.2);
+    color: var(--accent-cyan);
+  }
+  .sidebar-nav-item .sidebar-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: rgba(0,229,255,.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .sidebar-nav-item.whatsapp .sidebar-icon { background: rgba(37,211,102,.12); }
+  .sidebar-nav-item.telegram  .sidebar-icon { background: rgba(0,136,204,.12); }
+
+  .sidebar-section-label {
+    padding: .75rem 1.1rem .25rem;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .sidebar-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,.07);
+  }
+
+  /* ===================== TRACKING PAGE ===================== */
+  .tracking-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1.25rem 5rem;
+  }
+  .tracking-card {
+    background: linear-gradient(145deg, #0d1a2e, #091525);
+    border: 1px solid rgba(0,229,255,.12);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: fadeIn .4s ease;
+  }
+  .tracking-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 16px rgba(0,229,255,.3));
+  }
+  .tracking-card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-white);
+    text-align: center;
+    letter-spacing: .05em;
+  }
+  .tracking-card-desc {
+    font-size: .95rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.6;
+    margin-top: -.75rem;
+  }
+  .tracking-form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .tracking-form-group label {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .tracking-input {
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(0,229,255,.15);
+    border-radius: 12px;
+    color: var(--text-white);
+    padding: .9rem 1.1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .tracking-input:focus {
+    border-color: rgba(0,229,255,.5);
+    box-shadow: 0 0 0 3px rgba(0,229,255,.08);
+  }
+  .tracking-input::placeholder { color: #3a5a7a; }
+  .btn-track {
+    width: 100%;
+    padding: .9rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a74e8, #0d47a1);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    transition: all .25s;
+    box-shadow: 0 4px 20px rgba(26,116,232,.35);
+  }
+  .btn-track:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(26,116,232,.5);
+  }
+  .btn-track:active { transform: scale(.98); }
+
+  /* Tracking Result */
+  .tracking-result {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: .75rem;
+    animation: fadeIn .4s ease;
+  }
+  .tracking-result.show { display: flex; }
+  .tracking-result-header {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid rgba(0,229,255,.1);
+  }
+  .tracking-result-title {
+    font-family: 'Orbitron', monospace;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .tracking-result-count {
+    background: rgba(0,229,255,.1);
+    border: 1px solid rgba(0,229,255,.2);
+    color: var(--accent-cyan);
+    padding: .1rem .45rem;
+    border-radius: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  .tracking-order-card {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .tracking-order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .88rem;
+  }
+  .tracking-order-key {
+    color: var(--text-muted);
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .tracking-order-val {
+    color: var(--text-white);
+    font-weight: 700;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-all;
+  }
+  .tracking-no-result {
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: rgba(255,45,120,.05);
+    border: 1px solid rgba(255,45,120,.15);
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-size: .9rem;
+    display: none;
+  }
+  .tracking-no-result.show { display: block; }
+  .tracking-back {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    color: var(--accent-cyan);
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: .25rem 0;
+    letter-spacing: .05em;
+    transition: opacity .2s;
+    align-self: flex-start;
+  }
+  .tracking-back:hover { opacity: .75; }
+</style>
+</head>
+<body>
+
+<!-- ==================== WARNING POPUP ==================== -->
+<div class="warning-overlay" id="warningOverlay">
+  <div class="warning-box">
+    <div class="warning-header">
+      <div class="warning-icon-big">⚠️</div>
+      <div>
+        <div class="warning-title">PERHATIAN!</div>
+        <div class="warning-subtitle">Baca & pahami sebelum melanjutkan</div>
+      </div>
+    </div>
+
+    <div class="warning-rules">
+      <div class="warning-rule red">
+        <div class="warning-rule-title">🚫 TIDAK ADA REFUND</div>
+        <div class="warning-rule-desc">
+          Setiap transaksi yang telah diproses <strong>TIDAK DAPAT dibatalkan</strong> atau dikembalikan dananya dengan alasan apapun.
+        </div>
+      </div>
+      <div class="warning-rule blue">
+        <div class="warning-rule-title">🔄 RESET DEVICE (MAKS. 1X)</div>
+        <div class="warning-rule-desc">
+          Fasilitas reset device hanya dapat dilakukan <strong>maksimal 1 kali (1x)</strong> saja. Tidak ada toleransi lebih dari batas yang ditentukan.
+        </div>
+      </div>
+      <div class="warning-rule orange">
+        <div class="warning-rule-title">🛡️ RISIKO PENGGUNAAN</div>
+        <div class="warning-rule-desc">
+          <strong>TIDAK ADA</strong> tools yang 100% aman dari deteksi. Risiko banned atau sanksi akun <strong>sepenuhnya ditanggung pembeli.</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning-agree-text">
+      Dengan menekan tombol di bawah, kamu dianggap telah membaca,<br>memahami, dan menyetujui seluruh ketentuan dari <strong style="color:var(--accent-cyan);">Jorshh Store</strong>.
+    </div>
+    <button class="btn-warning-agree" onclick="closeWarning()">⚡ SAYA MENGERTI & SETUJU</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="toggleView('store')">JORSHH<span style="-webkit-text-fill-color: var(--accent-pink)">STORE</span></div>
+  <nav>
+    <a href="#" onclick="toggleView('store')">Home</a>
+    <a href="#" onclick="toggleView('store')">Products</a>
+    <button class="btn-login" id="btnLoginNav" onclick="openLoginModal()">Login</button>
+    
+    <div class="user-badge" id="userBadge">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <span class="user-name" id="userName">User</span>
+      
+      <button class="btn-admin-panel" id="btnAdminPanel" onclick="toggleView('admin')">Panel Admin</button>
+      <button class="btn-admin-panel" id="btnResellerPanel" style="border-color:rgba(74,122,255,.35); color:#aecbff;" onclick="toggleView('reseller')">Panel Reseller</button>
+      
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Hamburger Button -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="openSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- ===================== SIDEBAR MENU ===================== -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar-panel" id="sidebarPanel">
+  <div class="sidebar-header">
+    <span class="sidebar-title">MENU</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-nav">
+    <a class="sidebar-nav-item" onclick="closeSidebar(); toggleView('store')">
+      <div class="sidebar-icon">🏠</div>
+      Beranda
+    </a>
+    <a class="sidebar-nav-item" onclick="closeSidebar(); toggleView('tracking')">
+      <div class="sidebar-icon">🔍</div>
+      Lacak Pesanan
+    </a>
+
+    <div class="sidebar-section-label">💬 BANTUAN</div>
+
+    <a class="sidebar-nav-item whatsapp" href="https://wa.me/6285836936487" target="_blank" onclick="closeSidebar()">
+      <div class="sidebar-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      WhatsApp Admin
+    </a>
+    <a class="sidebar-nav-item telegram" href="https://t.me/jorshhadmin" target="_blank" onclick="closeSidebar()">
+      <div class="sidebar-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0088cc"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      </div>
+      Telegram Admin
+    </a>
+  </div>
+</div>
+
+<!-- ================= VIEW TRACKING ================= -->
+<div id="view-tracking" class="view-section">
+  <main style="padding-top: 1.5rem;">
+    <button class="tracking-back" onclick="toggleView('store')">← Kembali</button>
+  </main>
+  <div class="tracking-wrapper">
+    <div class="tracking-card">
+      <div class="tracking-icon">🧾</div>
+      <div>
+        <div class="tracking-card-title">Lacak Pesanan</div>
+        <div class="tracking-card-desc">Masukkan ID Transaksi, Nama, atau No HP Anda</div>
+      </div>
+
+      <div class="tracking-form-group">
+        <label>Cari Pesanan</label>
+        <input class="tracking-input" id="trackingInput" type="text" placeholder="ID Transaksi / Nama / No HP..." oninput="clearTrackingResult()">
+      </div>
+
+      <button class="btn-track" onclick="doTracking()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Lacak Sekarang
+      </button>
+
+      <!-- No result -->
+      <div class="tracking-no-result" id="trackingNoResult">
+        😕 Pesanan tidak ditemukan.<br>Periksa kembali ID Transaksi, Nama, atau No HP Anda.
+      </div>
+
+      <!-- Results -->
+      <div class="tracking-result" id="trackingResult">
+        <div class="tracking-result-header">
+          <span class="tracking-result-title">Hasil Ditemukan</span>
+          <span class="tracking-result-count" id="trackingResultCount">0</span>
+        </div>
+        <div id="trackingResultList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= VIEW STORE (DEFAULT) ================= -->
+<div id="view-store" class="view-section active">
+
+  <!-- HERO BANNER SLIDER -->
+  <section class="hero">
+    <div class="hero-slides" id="heroSlides">
+
+      <!-- Slide 1 -->
+      <div class="hero-slide">
+        <div class="hero-slide-bg" style="background-image: linear-gradient(135deg, #0a1020, #0d2040, #060c1a);"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-badge">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent-cyan);display:inline-block;"></span>
+            ⚡ Jorshh Store Official
+          </div>
+          <div class="hero-slide-title">Upgrade Your<br><span>Gaming Experience</span></div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="hero-slide">
+        <div class="hero-slide-bg" style="background-image: linear-gradient(135deg, #1a0a2e, #2a0050, #0d001a);"></div>
+        <div class="hero-slide-overlay" style="background: linear-gradient(135deg, rgba(6,12,26,.7), rgba(255,45,120,.05));"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-badge" style="background:rgba(255,45,120,.15); border-color:rgba(255,45,120,.4); color:var(--accent-pink);">
+            🔥 Best Seller
+          </div>
+          <div class="hero-slide-title">Tools & Cheat<br><span style="background:linear-gradient(90deg,var(--accent-pink),#ff8800); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Premium Harga Terjangkau</span></div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="hero-slide">
+        <div class="hero-slide-bg" style="background-image: linear-gradient(135deg, #001a10, #003020, #060c1a);"></div>
+        <div class="hero-slide-overlay" style="background: linear-gradient(135deg, rgba(6,12,26,.7), rgba(34,197,94,.05));"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-badge" style="background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.4); color:#4ade80;">
+            🛡️ 100% Trusted
+          </div>
+          <div class="hero-slide-title">Aman, Cepat &<br><span style="background:linear-gradient(90deg,#4ade80,var(--accent-cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Terpercaya</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="hero-dots" id="heroDots">
+      <div class="hero-dot active" onclick="goSlide(0)"></div>
+      <div class="hero-dot" onclick="goSlide(1)"></div>
+      <div class="hero-dot" onclick="goSlide(2)"></div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item">⚡ TRUSTED SINCE 2024 <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">ALL SAFE & OPEN 24 JAM <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">FAST RESPON 1–3 MENIT <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">NO REFUND POLICY <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">JORSHH STORE OFFICIAL <span class="ticker-sep">⚡</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">⚡ TRUSTED SINCE 2024 <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">ALL SAFE & OPEN 24 JAM <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">FAST RESPON 1–3 MENIT <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">NO REFUND POLICY <span class="ticker-sep">⚡</span></span>
+      <span class="ticker-item">JORSHH STORE OFFICIAL <span class="ticker-sep">⚡</span></span>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="productSearch" type="text" placeholder="Mau cari cheat apa hari ini?" oninput="searchProducts(this.value)">
+      <button class="search-btn" onclick="searchProducts(document.getElementById('productSearch').value)">CARI</button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProducts('all', this)">ALL</button>
+    <button class="filter-btn" onclick="filterProducts('android', this)">FREEFIRE</button>
+    <button class="filter-btn" onclick="filterProducts('ios', this)">iOS</button>
+    <button class="filter-btn" onclick="filterProducts('pc', this)">PC</button>
+    <button class="filter-btn" onclick="filterProducts('android', this)">ANDROID</button>
+    <button class="filter-btn" onclick="filterProducts('reseller', this)">RESELLER</button>
+  </div>
+
+  <!-- MAIN CONTENT STORE -->
+  <main>
+    <div class="section-header">
+      <div class="section-title">
+        🔥 POPULER
+      </div>
+      <span class="count-badge" id="countBadge">8</span>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+
+  <!-- BENEFIT SECTION -->
+  <div class="benefit-section">
+    <div class="benefit-title">⚡ Benefit Beli Di Kami</div>
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: rgba(34,197,94,.15);">💰</div>
+        <div class="benefit-card-title">Harga Termurah</div>
+        <div class="benefit-card-desc">Ramah & kompetitif</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: rgba(255,193,7,.15);">⚡</div>
+        <div class="benefit-card-title">Proses Kilat</div>
+        <div class="benefit-card-desc">Fast respon 1–3 Menit</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: rgba(0,140,255,.15);">🛡️</div>
+        <div class="benefit-card-title">Aman & Terpercaya</div>
+        <div class="benefit-card-desc">100% Trusted Seller</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: rgba(168,85,247,.15);">🕐</div>
+        <div class="benefit-card-title">Open 24 Jam</div>
+        <div class="benefit-card-desc">Sistem berjalan otomatis</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= VIEW ADMIN DASHBOARD ================= -->
+<div id="view-admin" class="view-section">
+  <main>
+    <div class="section-header">
+      <div class="section-title" style="color: var(--admin-gold)">
+        ⚡ Admin Dashboard
+      </div>
+      <button class="btn-secondary" style="padding: .5rem 1rem; font-size: .8rem;" onclick="toggleView('store')">Kembali ke Store</button>
+    </div>
+
+    <div class="admin-dashboard">
+      <!-- Stats -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Total Penjualan (Sim)</span>
+          <span class="admin-stat-value" id="adminTotalSales">Rp 0</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Total Pesanan</span>
+          <span class="admin-stat-value" id="adminTotalOrders">0</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">User Terdaftar</span>
+          <span class="admin-stat-value" id="adminTotalUsers">0</span>
+        </div>
+      </div>
+
+      <!-- RESELLER MANAGEMENT -->
+      <div class="admin-table-container">
+        <div class="admin-table-header">
+          <span class="admin-table-title" style="color: #aecbff;">Manajemen Reseller</span>
+        </div>
+        <div style="padding: 1.5rem;">
+          <p style="color:var(--text-muted); font-size:.9rem; margin-bottom:1rem;">
+            Buat akun reseller baru. Hanya Admin yang memiliki akses ini.
+          </p>
+          <div class="reseller-form-grid">
+            <div class="form-group" style="margin:0;">
+              <input type="text" class="form-input" id="adminNewResellerName" placeholder="Nama Reseller">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <input type="email" class="form-input" id="adminNewResellerEmail" placeholder="Email Reseller">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <input type="text" class="form-input" id="adminNewResellerPhone" placeholder="No. WhatsApp">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <input type="password" class="form-input" id="adminNewResellerPass" placeholder="Password">
+            </div>
+            <button class="btn-submit cyan" style="margin:0; height: 46px;" onclick="adminCreateReseller()">Buat Akun</button>
+          </div>
+          
+          <!-- Reseller List Table -->
+          <div style="margin-top: 2rem; overflow-x: auto;">
+            <table style="min-width: 100%;">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>No. HP</th>
+                  <th>Dibuat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="resellerTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="admin-table-container">
+        <div class="admin-table-header">
+          <span class="admin-table-title">Riwayat Pesanan Terbaru</span>
+          <button class="btn-login" style="font-size:.7rem; padding: .2rem .6rem;" onclick="refreshAdminData()">Refresh Data</button>
+        </div>
+        <div class="table-responsive">
+          <table id="adminOrdersTable">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama & Email</th>
+                <th>No. HP</th>
+                <th>Produk</th>
+                <th>Harga</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be injected here via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= VIEW RESELLER ================= -->
+<div id="view-reseller" class="view-section">
+  <main>
+    <div class="section-header">
+      <div class="section-title" style="color: #aecbff">
+        💼 Reseller Dashboard
+      </div>
+      <button class="btn-secondary" style="padding: .5rem 1rem; font-size: .8rem;" onclick="toggleView('store')">Kembali ke Store</button>
+    </div>
+
+    <div class="admin-dashboard">
+      <!-- Reseller Stats -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Total Penjualan (Sim)</span>
+          <span class="admin-stat-value" id="resellerTotalSales">Rp 0</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Pesanan Saya</span>
+          <span class="admin-stat-value" id="resellerTotalOrders">0</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Komisi Terbaru</span>
+          <span class="admin-stat-value" id="resellerCommission">Rp 0</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-label">Markup Dasar</span>
+          <span class="admin-stat-value" id="resellerMarkup">20%</span>
+        </div>
+      </div>
+
+      <!-- Reseller Products Pricing -->
+      <div class="admin-table-container" style="margin-top: 2rem;">
+        <div class="admin-table-header">
+          <span class="admin-table-title">Produk & Harga Reseller</span>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Produk</th>
+                <th>Harga Normal</th>
+                <th>Harga Reseller</th>
+                <th>Keuntungan / Item</th>
+              </tr>
+            </thead>
+            <tbody id="resellerPriceTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reseller Orders History -->
+      <div class="admin-table-container" style="margin-top: 2rem;">
+        <div class="admin-table-header">
+          <span class="admin-table-title">Pesanan Saya (Sebagai Reseller)</span>
+          <button class="btn-login" style="font-size:.7rem; padding: .2rem .6rem;" onclick="refreshResellerData()">Refresh Data</button>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID Pesanan</th>
+                <th>Produk</th>
+                <th>Jumlah</th>
+                <th>Total Harga</th>
+                <th>Tanggal</th>
+              </tr>
+            </thead>
+            <tbody id="resellerOrdersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- CS BANTUAN -->
+<button class="cs-float" onclick="openWhatsApp('6285836936487', 'Halo Jorshh Store, saya butuh bantuan.')">
+  <div class="cs-dot"></div>
+  CS Bantuan
+</button>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">JORSHH<span style="-webkit-text-fill-color: var(--accent-pink)">STORE</span></div>
+  <p>Platform jual beli tools gaming terpercaya di Indonesia.</p>
+  <div class="footer-links">
+    <a href="#">Terms of Service</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Tutorial</a>
+    <a href="#">Hubungi Kami</a>
+  </div>
+  <p style="margin-top: 1.5rem; font-size: .8rem; color: #3a5a7a;">&copy; 2025 Jorshh Store. All rights reserved.</p>
+</footer>
+
+<!-- ==================== MODAL LOGIN / REGISTER ==================== -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="modal-glow"></div>
+    <button class="modal-close" onclick="closeModal('authModal')">&times;</button>
+    <div class="modal-content">
+      <div class="modal-title" style="text-align:center;">Akun Jorshh Store</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login', this)">Login</button>
+        <button class="auth-tab" onclick="switchAuthTab('register', this)">Daftar</button>
+      </div>
+
+      <!-- Form Login -->
+      <div class="auth-form active" id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="nama@email.com">
+          <div class="form-error" id="loginEmailErr">Email wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" id="loginPass" placeholder="Masukkan password">
+          <div class="form-error" id="loginPassErr">Password wajib diisi</div>
+        </div>
+        <button class="btn-submit cyan" onclick="handleLogin()">Login</button>
+
+        <div class="modal-switch">
+          Belum punya akun? <a onclick="switchAuthTab('register', document.querySelectorAll('.auth-tab')[1])">Daftar sekarang</a>
+        </div>
+      </div>
+
+      <!-- Form Register -->
+      <div class="auth-form" id="registerForm">
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" class="form-input" id="regName" placeholder="Nama kamu">
+          <div class="form-error" id="regNameErr">Nama wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" class="form-input" id="regEmail" placeholder="nama@email.com">
+          <div class="form-error" id="regEmailErr">Email tidak valid</div>
+        </div>
+        <div class="form-group">
+          <label>No. WhatsApp</label>
+          <input type="text" class="form-input" id="regPhone" placeholder="08xxxxxxxxxx">
+          <div class="form-error" id="regPhoneErr">Nomor WhatsApp wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" id="regPass" placeholder="Min. 6 karakter">
+          <div class="form-error" id="regPassErr">Password min. 6 karakter</div>
+        </div>
+        <button class="btn-submit pink" onclick="handleRegister()">Daftar Akun</button>
+
+        <div class="modal-switch">
+          Sudah punya akun? <a onclick="switchAuthTab('login', document.querySelectorAll('.auth-tab')[0])">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL PENJUALAN / ORDER ==================== -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-glow"></div>
+    <button class="modal-close" onclick="closeModal('orderModal')">&times;</button>
+    <div class="modal-content" style="padding:1.5rem 1.25rem;">
+
+      <div id="orderFormSection">
+
+        <!-- STEP 1: DATA PEMBELI -->
+        <div class="order-step-header">
+          <div class="order-step-num">1</div>
+          <div class="order-step-title">DATA PEMBELI</div>
+        </div>
+        <div class="order-step-box">
+          <input type="text" class="order-plain-input" id="orderBuyerName" placeholder="Masukkan Nama Anda (Bebas)">
+          <input type="text" class="order-plain-input" id="orderPhone" placeholder="Masukkan Nomor WhatsApp">
+          <div class="form-error" id="orderPhoneErr" style="margin-top:-.5rem;">No. WhatsApp wajib diisi</div>
+          <input type="text" class="order-plain-input" id="orderGameId" placeholder="ID Game / User ID">
+          <div class="form-error" id="orderGameIdErr" style="margin-top:-.5rem;">ID Game wajib diisi</div>
+        </div>
+
+        <!-- STEP 2: PILIH ITEM -->
+        <div class="order-step-header" style="margin-top:1.25rem;">
+          <div class="order-step-num">2</div>
+          <div class="order-step-title">PILIH ITEM</div>
+        </div>
+        <div class="paket-grid" id="paketGrid">
+          <!-- Diisi JS -->
+        </div>
+
+        <!-- STEP 3: PAYMENT METHOD -->
+        <div class="order-step-header" style="margin-top:1.25rem;">
+          <div class="order-step-num">3</div>
+          <div class="order-step-title">PAYMENT METHOD</div>
+        </div>
+        <div class="order-step-box" style="padding:.85rem 1rem;">
+          <div style="font-weight:700; font-size:.9rem; color:var(--text-white); margin-bottom:.5rem;">Support E-Wallet & Bank</div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:1.1rem; font-weight:800; color:var(--accent-cyan); letter-spacing:.08em;">QRIS</div>
+            <span style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:4px; letter-spacing:.08em;">PAKASIR</span>
+          </div>
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="order-bottom-bar">
+          <div>
+            <div style="font-size:.75rem; color:var(--text-muted);">Jumlah</div>
+            <div style="font-family:'Orbitron'; font-size:1.1rem; font-weight:700; color:var(--text-white);" id="orderTotalPrice">Rp 0</div>
+          </div>
+          <button class="btn-beli-sekarang" onclick="handleOrder()">🛒 BELI SEKARANG</button>
+        </div>
+
+      </div>
+
+      <!-- QRIS SECTION -->
+      <div id="qrisSection" style="display:none;">
+        <div class="payment-waiting-card">
+
+          <!-- Progress Steps -->
+          <div class="inv-steps">
+            <div class="inv-step active">
+              <div class="inv-step-circle">💳</div>
+              <div class="inv-step-label">Bayar</div>
+            </div>
+            <div class="inv-step-line done"></div>
+            <div class="inv-step">
+              <div class="inv-step-circle">🎮</div>
+              <div class="inv-step-label">Proses</div>
+            </div>
+            <div class="inv-step-line"></div>
+            <div class="inv-step">
+              <div class="inv-step-circle">✅</div>
+              <div class="inv-step-label">Selesai</div>
+            </div>
+          </div>
+
+          <!-- Status + Timer -->
+          <div class="inv-status-header">
+            <div class="inv-status-title">⏳ Menunggu Pembayaran</div>
+            <div class="inv-status-sub">Selesaikan pembayaranmu untuk<br>menghindari pembatalan otomatis</div>
+            <div class="inv-timer-block">
+              <div class="inv-timer-unit">
+                <div class="inv-timer-digit" id="timerHour">00</div>
+                <div class="inv-timer-label">Jam</div>
+              </div>
+              <div class="inv-timer-colon">:</div>
+              <div class="inv-timer-unit">
+                <div class="inv-timer-digit" id="timerMinute">59</div>
+                <div class="inv-timer-label">Menit</div>
+              </div>
+              <div class="inv-timer-colon">:</div>
+              <div class="inv-timer-unit">
+                <div class="inv-timer-digit" id="timerSecond">00</div>
+                <div class="inv-timer-label">Detik</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Code -->
+          <div class="payment-qrcode">
+            <div class="inv-qr-frame">
+              <img id="qrisImage" src="" alt="QR Pakasir" />
+            </div>
+            <button class="inv-pay-btn" onclick="window.open(document.getElementById('qrisImage').src,'_blank')">
+              💳 Bayar Sekarang
+            </button>
+            <div class="qris-note" id="qrisLink">Scan QR dengan e-wallet atau mobile banking</div>
+          </div>
+
+          <!-- Detail Pembelian -->
+          <div class="payment-details-card">
+            <div class="inv-detail-header">
+              <div class="payment-detail-title">📋 Detail Pembelian</div>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Invoice ID</span>
+              <span class="inv-detail-val" style="font-family:'Orbitron'; font-size:.72rem; color:var(--accent-cyan);" id="paymentTransactionId">-
+                <button class="inv-copy-btn" onclick="copyInvoiceId()" title="Salin">📋</button>
+              </span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Produk</span>
+              <span class="inv-detail-val" id="paymentProductName">-</span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Paket</span>
+              <span class="inv-detail-val" id="paymentProductPackage">-</span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Metode</span>
+              <span class="inv-detail-val" style="color:var(--accent-cyan);">QRIS</span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Subtotal</span>
+              <span class="inv-detail-val" id="paymentPrice">Rp 0</span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Fee Transaksi</span>
+              <span class="inv-detail-val">Rp 0</span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Discount</span>
+              <span class="inv-detail-val" style="color:#4ade80;">-Rp 0</span>
+            </div>
+            <div class="inv-total-row">
+              <span class="inv-total-label">Total Harga</span>
+              <span class="inv-total-price">
+                <span id="paymentTotalAmount">Rp 0</span>
+                <button class="inv-copy-btn" onclick="copyTotal()" title="Salin">📋</button>
+              </span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Status</span>
+              <span class="inv-detail-val"><span id="paymentStatus" class="status-pill status-pending">PENDING</span></span>
+            </div>
+            <div class="inv-detail-row">
+              <span class="inv-detail-key">Tgl. Dibuat</span>
+              <span class="inv-detail-val" style="font-size:.78rem;" id="paymentDate">-</span>
+            </div>
+          </div>
+
+          <!-- License Key -->
+          <div class="payment-license-card">
+            <div class="payment-license-title">🔑 License Key Anda</div>
+            <div class="payment-license-value" id="paymentLicenseKey">Menunggu konfirmasi pembayaran...</div>
+          </div>
+
+          <button class="btn-submit pink" style="border-radius:12px;" onclick="cancelPayment()">✕ Batalkan Pesanan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS (UNIFIED) -->
+<div class="confirm-modal-overlay" id="confirmDeleteModal">
+  <div class="confirm-modal">
+    <h3 id="confirmDeleteTitle">Konfirmasi Hapus</h3>
+    <p id="confirmDeleteDesc">Anda yakin ingin menghapus data ini?</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Batal</button>
+      <button class="btn-confirm-delete" onclick="confirmDeleteAction()">Hapus Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ============================================================
+  // KONFIGURASI
+  // ============================================================
+  const CS_WHATSAPP = "6285836936487";
+
+  // AKUN ADMIN
+  const ADMIN_EMAIL = "admin@jorshh.com";
+  const ADMIN_PASS = "admin123";
+
+  // DATA PRODUK
+  const products = [
+    { 
+      id:1,  
+      name: "DRIP CLIENT APKMOD",       
+      cat: "freefire", platform: "android", 
+      color: "linear-gradient(135deg,#1a0a2e,#3d1060)", 
+      label: "DC",  
+      labelColor: "#e040fb", 
+      price: 40000,
+      image: "https://z-cdn-media.chatglm.cn/files/03bb0aff-3a36-46ba-8b01-34faa33f8339.jpg?auth_key=1878082799-bab519472d574c50946d39639d439a01-0-084eb913c9d95188eecc6621faf4c648"
+    },
+    { 
+      id:2,  
+      name: "DRIP CLIENT ROOT",          
+      cat: "freefire", platform: "android", 
+      color: "linear-gradient(135deg,#0a1a2e,#103060)", 
+      label: "DC",  
+      labelColor: "#40c4ff", 
+      price: 40000,
+      image: "https://z-cdn-media.chatglm.cn/files/03bb0aff-3a36-46ba-8b01-34faa33f8339.jpg?auth_key=1878082799-bab519472d574c50946d39639d439a01-0-084eb913c9d95188eecc6621faf4c648"
+    },
+    { id:3,  name: "DRIP CLIENT PC AIMKILL",    cat: "freefire", platform: "pc",      color: "linear-gradient(135deg,#1a1a0a,#404010)", label: "DC",  labelColor: "#ffeb3b", price: 60000 },
+    { id:4,  name: "HG CHEATS MOD & ROOT",      cat: "freefire", platform: "android", color: "linear-gradient(135deg,#1a0a0a,#601010)", label: "HG",  labelColor: "#ff5252", price: 35000 },
+    { 
+      id:5,  
+      name: "BR MODS ROOT & VIRTUAL",    
+      cat: "freefire", platform: "android", 
+      color: "linear-gradient(135deg,#0a1a1a,#106060)", 
+      label: "BR",  
+      labelColor: "#00e5ff", 
+      price: 30000,
+      image: "https://z-cdn-media.chatglm.cn/files/de6a49df-c1f8-446e-bf3c-d4dd6af4539e.jpg?auth_key=1878082799-f96315d0ca4343deb4bf37ef02551c6a-0-40eaf66fa5daae0a1f6e3b104133416f"
+    },
+    { 
+      id:6,  
+      name: "BR MODS PC",                
+      cat: "freefire", platform: "pc",      
+      color: "linear-gradient(135deg,#0a1a1a,#0a4040)", 
+      label: "BR",  
+      labelColor: "#00bcd4", 
+      price: 55000,
+      image: "https://z-cdn-media.chatglm.cn/files/de6a49df-c1f8-446e-bf3c-d4dd6af4539e.jpg?auth_key=1878082799-f96315d0ca4343deb4bf37ef02551c6a-0-40eaf66fa5daae0a1f6e3b104133416f"
+    },
+    { 
+      id:7,  
+      name: "HAX-CAKER PRO ROOT",        
+      cat: "freefire", platform: "android", 
+      color: "linear-gradient(135deg,#1a0e00,#4a2600)", 
+      label: "HC",  
+      labelColor: "#ff9800", 
+      price: 45000,
+      image: "https://z-cdn-media.chatglm.cn/files/5227233a-09df-4379-822f-242cbdc0bf15.jpg?auth_key=1878082799-6a44b663cdd94614b6ed8fd1cdd8c546-0-dee339e1c0dcd7eddb411e4bb9e041f4"
+    },
+    { id:8,  name: "FLUORITE iOS",              cat: "freefire", platform: "ios",     color: "linear-gradient(135deg,#1a0a2e,#2e1a4a)", label: "FL",  labelColor: "#ce93d8", price: 75000 }
+  ];
+
+  const badgeMap   = { android: "badge-android", ios: "badge-ios", pc: "badge-pc", reseller: "badge-reseller" };
+  const badgeLabel = { android: "ANDROID",       ios: "iOS",       pc: "PC",       reseller: "RESELLER" };
+
+  // ============================================================
+  // RENDER PRODUK
+  // ============================================================
+  function renderCards(list) {
+    const grid = document.getElementById('productGrid');
+    document.getElementById('countBadge').textContent = list.length;
+    grid.innerHTML = list.map(p => `
+      <div class="product-card">
+        <div class="card-img" style="background: ${p.color};">
+          ${p.image 
+            ? `<div class="card-img-inner" style="padding:0;"><img src="${p.image}" style="width:100%; height:100%; object-fit:contain; border-radius:10px;"></div>`
+            : `<div class="card-img-inner" style="color:${p.labelColor}; text-shadow: 0 0 24px ${p.labelColor}80;">${p.label}</div>`
+          }
+          <span class="platform-badge ${badgeMap[p.platform]}">${badgeLabel[p.platform]}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${p.name}</div>
+          <button class="btn-buy" onclick="openOrderModal(${p.id})">🛒 BELI</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterProducts(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = cat === 'all'
+      ? products
+      : products.filter(p => p.cat === cat || p.platform === cat);
+    renderCards(filtered);
+  }
+
+  function toggleView(viewName) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.getElementById(`view-${viewName}`).classList.add('active');
+    if (viewName === 'admin') refreshAdminData();
+    if (viewName === 'tracking') {
+      document.getElementById('trackingInput').value = '';
+      clearTrackingResult();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+    if (id === 'orderModal') stopPaymentTimer();
+    document.querySelectorAll('.form-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.form-input.error, .google-sim-input.error').forEach(e => e.classList.remove('error'));
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal(overlay.id);
+    });
+  });
+
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // ============================================================
+  // LOGIN & REGISTER
+  // ============================================================
+  function openLoginModal() {
+    switchAuthTab('login', document.querySelectorAll('.auth-tab')[0]);
+    openModal('authModal');
+  }
+
+  function switchAuthTab(tab, btnEl) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    btnEl.classList.add('active');
+    document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+  }
+
+  function validateField(inputId, errId, condition) {
+    const input = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    if (!condition) {
+      input.classList.add('error');
+      err.classList.add('show');
+      return false;
+    }
+    input.classList.remove('error');
+    err.classList.remove('show');
+    return true;
+  }
+
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPass').value.trim(); // TAMBAHAN: Trim password
+    let valid = true;
+    if (!validateField('loginEmail', 'loginEmailErr', email.length > 0)) valid = false;
+    if (!validateField('loginPass',  'loginPassErr',  pass.length > 0)) valid = false;
+    if (!valid) return;
+
+    console.log("Mencoba login dengan:", email); // DEBUG
+
+    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+      const adminUser = {
+        name: 'Administrator',
+        email: ADMIN_EMAIL,
+        phone: '-',
+        password: ADMIN_PASS,
+        loginMethod: 'manual',
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      };
+      localStorage.setItem('nexus_session', JSON.stringify(adminUser));
+      updateHeaderUI(adminUser);
+      closeModal('authModal');
+      showToast(`Welcome back, Boss!`, 'success');
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPass').value = '';
+      return;
+    }
+
+    if (email === 'reseller@demo.com' && pass === 'reseller123') {
+      const resellerUser = {
+        name: 'Demo Reseller',
+        email: 'reseller@demo.com',
+        phone: '081234567890',
+        password: 'reseller123',
+        loginMethod: 'manual',
+        role: 'reseller',
+        createdAt: new Date().toISOString()
+      };
+      localStorage.setItem('nexus_session', JSON.stringify(resellerUser));
+      updateHeaderUI(resellerUser);
+      closeModal('authModal');
+      showToast(`Selamat datang, Reseller!`, 'success');
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPass').value = '';
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    console.log("Total user di localStorage:", users.length); // DEBUG
+    const found = users.find(u => u.email.toLowerCase() === email && u.password === pass && u.loginMethod !== 'google');
+
+    if (!found) {
+      console.log("Login Gagal. User tidak ditemukan atau password salah."); // DEBUG
+      showToast('Email atau password salah!', 'error');
+      return;
+    }
+
+    localStorage.setItem('nexus_session', JSON.stringify(found));
+    updateHeaderUI(found);
+    closeModal('authModal');
+    showToast(`Selamat datang, ${found.name}!`, 'success');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPass').value = '';
+  }
+
+  function handleRegister() {
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('regPhone').value.trim();
+    const pass  = document.getElementById('regPass').value;
+    let valid = true;
+    if (!validateField('regName',  'regNameErr',  name.length > 0)) valid = false;
+    if (!validateField('regEmail', 'regEmailErr', email.includes('@') && email.includes('.'))) valid = false;
+    if (!validateField('regPhone', 'regPhoneErr', phone.length >= 10)) valid = false;
+    if (!validateField('regPass',  'regPassErr',  pass.length >= 6)) valid = false;
+    if (!valid) return;
+
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    if (users.find(u => u.email.toLowerCase() === email)) {
+      showToast('Email sudah terdaftar!', 'error');
+      return;
+    }
+    
+    const role = 'user'; 
+    
+    const newUser = { name, email, phone, password: pass, loginMethod: 'manual', role, createdAt: new Date().toISOString() };
+    users.push(newUser);
+    localStorage.setItem('nexus_users', JSON.stringify(users));
+    localStorage.setItem('nexus_session', JSON.stringify(newUser));
+    updateHeaderUI(newUser);
+    closeModal('authModal');
+    showToast('Akun pembeli berhasil dibuat!', 'success');
+    document.getElementById('regName').value = '';
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPhone').value = '';
+    document.getElementById('regPass').value = '';
+  }
+
+  function handleLogout() {
+    updateHeaderUI(null);
+    toggleView('store');
+    try {
+      localStorage.removeItem('nexus_session');
+      showToast('Berhasil logout', 'success');
+    } catch (error) {
+      console.warn("Gagal menghapus session (Mode File):", error);
+      showToast('Logout berhasil (Session lokal saja)', 'info');
+    }
+  }
+
+  // ============================================================
+  // GOOGLE SIMULATION
+  // ============================================================
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join('')));
+    } catch (e) { return null; }
+  }
+
+  function handleGoogleCredentialResponse(response) {
+    const payload = parseJwt(response.credential);
+    if (!payload) { showToast('Gagal memproses login Google', 'error'); return; }
+
+    const googleUser = {
+      name: payload.name || 'Google User',
+      email: payload.email,
+      phone: '',
+      password: 'google_oauth_' + payload.sub,
+      picture: payload.picture || '',
+      loginMethod: 'google',
+      role: 'user',
+      googleId: payload.sub,
+      createdAt: new Date().toISOString()
+    };
+
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    const existingIdx = users.findIndex(u => u.email === googleUser.email && u.loginMethod === 'google');
+    if (existingIdx >= 0) {
+      users[existingIdx] = { ...users[existingIdx], ...googleUser };
+    } else {
+      users.push(googleUser);
+    }
+    localStorage.setItem('nexus_users', JSON.stringify(users));
+    localStorage.setItem('nexus_session', JSON.stringify(googleUser));
+    updateHeaderUI(googleUser);
+    closeModal('authModal');
+    showToast(`Selamat datang, ${googleUser.name}!`, 'success');
+  }
+
+  function updateHeaderUI(user) {
+    const btnLogin = document.getElementById('btnLoginNav');
+    const badge    = document.getElementById('userBadge');
+    const avatar   = document.getElementById('userAvatar');
+    const nameEl   = document.getElementById('userName');
+    const btnAdmin = document.getElementById('btnAdminPanel');
+
+    if (user) {
+      btnLogin.style.display = 'none';
+      badge.classList.add('show');
+
+      if (user.role === 'admin') {
+        avatar.classList.add('is-admin');
+        avatar.textContent = 'A';
+        avatar.style.background = 'linear-gradient(135deg, #ffd700, #ffa500)';
+        avatar.style.color = '#000';
+        nameEl.innerHTML = `${user.name}<span class="admin-badge">ADMIN</span>`;
+        btnAdmin.style.display = 'block';
+        document.getElementById('btnResellerPanel').style.display = 'none';
+      } else if (user.role === 'reseller') {
+        avatar.classList.remove('is-admin');
+        avatar.textContent = user.name.charAt(0).toUpperCase();
+        nameEl.innerHTML = `${user.name} <span class="reseller-badge">RESELLER</span>`;
+        btnAdmin.style.display = 'none';
+        document.getElementById('btnResellerPanel').style.display = 'block';
+      } else {
+        avatar.classList.remove('is-admin');
+        avatar.textContent = user.name.charAt(0).toUpperCase();
+        nameEl.innerHTML = `${user.name}`;
+        btnAdmin.style.display = 'none';
+        document.getElementById('btnResellerPanel').style.display = 'none';
+      }
+    } else {
+      btnLogin.style.display = '';
+      badge.classList.remove('show');
+      avatar.innerHTML = '';
+      avatar.textContent = 'U';
+      avatar.classList.remove('is-admin');
+      nameEl.innerHTML = '';
+      nameEl.textContent = 'User';
+      btnAdmin.style.display = 'none';
+      document.getElementById('btnResellerPanel').style.display = 'none';
+    }
+  }
+
+  // ============================================================
+  // ADMIN: CREATE RESELLER (DENGAN PERBAIKAN LOGIN)
+  // ============================================================
+  function adminCreateReseller() {
+    const name = document.getElementById('adminNewResellerName').value.trim();
+    const email = document.getElementById('adminNewResellerEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('adminNewResellerPhone').value.trim();
+    const pass = document.getElementById('adminNewResellerPass').value.trim(); // TAMBAHAN: Trim
+
+    if(!name || !email || !pass) {
+      showToast('Nama, Email dan Password wajib diisi!', 'error');
+      return;
+    }
+
+    console.log("Mencoba membuat reseller:", email, pass); // DEBUG
+
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    if (users.find(u => u.email.toLowerCase() === email)) {
+      showToast('Email sudah terdaftar sebagai user lain!', 'error');
+      return;
+    }
+
+    const newReseller = {
+      name: name,
+      email: email,
+      phone: phone,
+      password: pass, // Password yang disimpan sesuai input
+      role: 'reseller',
+      loginMethod: 'manual',
+      createdAt: new Date().toISOString()
+    };
+
+    users.push(newReseller);
+    try {
+        localStorage.setItem('nexus_users', JSON.stringify(users));
+        console.log("Berhasil simpan ke localStorage. Total user:", users.length); // DEBUG
+        
+        // Reset form
+        document.getElementById('adminNewResellerName').value = '';
+        document.getElementById('adminNewResellerEmail').value = '';
+        document.getElementById('adminNewResellerPhone').value = '';
+        document.getElementById('adminNewResellerPass').value = '';
+
+        renderResellerList();
+        showToast('Akun Reseller berhasil dibuat! Silakan coba login.', 'success');
+    } catch (e) {
+        console.error("Gagal menyimpan localStorage", e);
+        showToast("Gagal menyimpan (Cek Browser Mode File)", "error");
+    }
+  }
+
+  function renderResellerList() {
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    const resellers = users.filter(u => u.role === 'reseller');
+    const tbody = document.getElementById('resellerTableBody');
+
+    if (resellers.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1rem;">Belum ada reseller.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = resellers.map(r => {
+      const dateStr = new Date(r.createdAt).toLocaleDateString('id-ID');
+      return `
+        <tr>
+          <td style="font-weight:600;">${r.name}</td>
+          <td>${r.email}</td>
+          <td>${r.phone || '-'}</td>
+          <td style="font-size:.8rem; color:var(--text-muted);">${dateStr}</td>
+          <td>
+            <button class="btn-delete" onclick="deleteReseller('${r.email}')" title="Hapus Reseller">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // ============================================================
+  // UNIFIED DELETE LOGIC (SAMA UNTUK ORDER & RESELLER)
+  // ============================================================
+  let pendingDeleteType = null; // 'order' atau 'reseller'
+  let pendingDeleteId = null;
+  let pendingDeleteEmail = null;
+
+  function deleteOrder(id) {
+    pendingDeleteType = 'order';
+    pendingDeleteId = id;
+    pendingDeleteEmail = null;
+
+    // Update Modal Teks untuk Order
+    document.getElementById('confirmDeleteTitle').innerText = 'Konfirmasi Hapus Pesanan';
+    document.getElementById('confirmDeleteDesc').innerText = 'Anda yakin ingin menghapus pesanan ini dari riwayat? Tindakan ini tidak bisa dikembalikan.';
+
+    document.getElementById('confirmDeleteModal').classList.add('open');
+  }
+
+  function deleteReseller(email) {
+    pendingDeleteType = 'reseller';
+    pendingDeleteId = null;
+    pendingDeleteEmail = email;
+
+    // Update Modal Teks untuk Reseller
+    document.getElementById('confirmDeleteTitle').innerText = 'Hapus Akun Reseller';
+    document.getElementById('confirmDeleteDesc').innerText = 'Anda yakin ingin menghapus akun reseller ini? Data tidak bisa dikembalikan.';
+
+    document.getElementById('confirmDeleteModal').classList.add('open');
+  }
+
+  function closeConfirmModal() {
+    pendingDeleteType = null;
+    pendingDeleteId = null;
+    pendingDeleteEmail = null;
+    document.getElementById('confirmDeleteModal').classList.remove('open');
+  }
+
+  function confirmDeleteAction() {
+    if (pendingDeleteType === 'order') {
+        if (!pendingDeleteId) return;
+        let orders = JSON.parse(localStorage.getItem('nexus_orders') || '[]');
+        const index = orders.findIndex(o => o.id === pendingDeleteId);
+        if (index !== -1) {
+            orders.splice(index, 1);
+            localStorage.setItem('nexus_orders', JSON.stringify(orders));
+            refreshAdminData();
+            showToast('Pesanan berhasil dihapus', 'success');
+        } else {
+            showToast('Gagal menghapus pesanan.', 'error');
+        }
+    } else if (pendingDeleteType === 'reseller') {
+        if (!pendingDeleteEmail) return;
+        let users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+        users = users.filter(u => u.email !== pendingDeleteEmail);
+        localStorage.setItem('nexus_users', JSON.stringify(users));
+        renderResellerList();
+        showToast('Reseller dihapus', 'success');
+    }
+    closeConfirmModal();
+  }
+
+  // ============================================================
+  // RESELLER FUNCTIONS
+  // ============================================================
+  const RESELLER_MARKUP = 0.20; 
+
+  function refreshResellerData() {
+    const session = JSON.parse(localStorage.getItem('nexus_session') || 'null');
+    if (!session || session.role !== 'reseller') return;
+
+    const orders = JSON.parse(localStorage.getItem('nexus_orders') || '[]');
+    const resellerOrders = orders.filter(o => o.resellerId === session.email);
+
+    const totalSales = resellerOrders.reduce((sum, o) => sum + (o.price || 0), 0);
+    const totalProfit = resellerOrders.reduce((sum, o) => sum + ((o.price || 0) * RESELLER_MARKUP), 0);
+
+    document.getElementById('resellerTotalSales').textContent = formatRupiah(totalSales);
+    document.getElementById('resellerTotalOrders').textContent = resellerOrders.length;
+    document.getElementById('resellerCommission').textContent = formatRupiah(totalProfit);
+
+    const pricingHtml = products.map(p => {
+      const normalPrice = p.price;
+      const resellerPrice = Math.ceil(normalPrice * (1 + RESELLER_MARKUP));
+      const profit = resellerPrice - normalPrice;
+      return `
+        <tr>
+          <td style="font-weight:600;">${p.name}</td>
+          <td>${formatRupiah(normalPrice)}</td>
+          <td style="color:var(--accent-cyan); font-weight:600;">${formatRupiah(resellerPrice)}</td>
+          <td style="color:var(--accent-pink); font-weight:600;">${formatRupiah(profit)}</td>
+        </tr>
+      `;
+    }).join('');
+    document.getElementById('resellerPriceTable').innerHTML = pricingHtml;
+
+    const ordersHtml = resellerOrders.map(o => {
+      return `
+        <tr>
+          <td style="font-family:'Orbitron';"><strong>${o.id.substring(0, 8)}</strong></td>
+          <td>${o.productName}</td>
+          <td style="text-align:center;">1</td>
+          <td style="color:var(--accent-cyan); font-weight:600;">${formatRupiah(o.price)}</td>
+          <td style="font-size:.85rem; color:var(--text-muted);">${new Date(o.createdAt).toLocaleDateString('id-ID')}</td>
+        </tr>
+      `;
+    }).join('') || '<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">Belum ada pesanan</td></tr>';
+    document.getElementById('resellerOrdersTable').innerHTML = ordersHtml;
+  }
+
+  (function autoFixSession() {
+    const session = JSON.parse(localStorage.getItem('nexus_session') || 'null');
+    if (session && (session.email === "admin@nexus.com" || session.email.includes("nexus.com"))) {
+      console.log("Deteksi sesi lama (nexus.com). Membersihkan...");
+      localStorage.removeItem('session');
+      showToast("Sesi lama ditemukan. Silakan login ulang.", 'info');
+      updateHeaderUI(null);
+    } else if (session) {
+      updateHeaderUI(session);
+      if (session.role === 'reseller') {
+        refreshResellerData();
+      }
+    }
+  })();
+
+  let currentOrderProduct = null;
+  let selectedPayment = 'QRIS';
+  let paymentTimerInterval = null;
+  let selectedPaket = null;
+
+  const paketList = [
+    { name: '1 Minggu', value: 15000, oldValue: 30000 },
+    { name: '1 Bulan',  value: 40000, oldValue: 80000 },
+    { name: '3 Bulan',  value: 100000, oldValue: 200000 },
+    { name: 'Permanen', value: 180000, oldValue: 350000 },
+  ];
+
+  function renderPaketGrid() {
+    const grid = document.getElementById('paketGrid');
+    grid.innerHTML = paketList.map((p, i) => `
+      <div class="paket-card ${i === 1 ? 'active' : ''}" onclick="selectPaket(this, ${i})">
+        <div class="paket-card-name">${p.name}</div>
+        <div class="paket-card-price">
+          <span class="paket-card-old">${formatRupiah(p.oldValue)}</span>${formatRupiah(p.value)}
+        </div>
+      </div>
+    `).join('');
+    selectedPaket = paketList[1];
+    document.getElementById('orderTotalPrice').textContent = formatRupiah(selectedPaket.value);
+  }
+
+  function selectPaket(el, idx) {
+    document.querySelectorAll('.paket-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedPaket = paketList[idx];
+    document.getElementById('orderTotalPrice').textContent = formatRupiah(selectedPaket.value);
+  }
+
+  function openOrderModal(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    currentOrderProduct = product;
+
+    document.getElementById('orderGameId').value = '';
+    document.getElementById('orderPhone').value = '';
+    document.getElementById('orderBuyerName').value = '';
+    document.getElementById('orderGameIdErr').classList.remove('show');
+    document.getElementById('orderGameId').classList.remove('error');
+    document.getElementById('orderPhoneErr').classList.remove('show');
+    document.getElementById('orderPhone').classList.remove('error');
+
+    document.getElementById('orderFormSection').style.display = 'block';
+    document.getElementById('qrisSection').style.display = 'none';
+
+    renderPaketGrid();
+    openModal('orderModal');
+  }
+
+  function selectPayment(el, method) {
+    document.querySelectorAll('.payment-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedPayment = method;
+  }
+
+  function updateTotal() {}
+
+  function formatRupiah(num) {
+    return 'Rp ' + num.toLocaleString('id-ID');
+  }
+
+  function handleOrder() {
+    const gameId = document.getElementById('orderGameId').value.trim();
+    const phone  = document.getElementById('orderPhone').value.trim();
+    if (!validateField('orderGameId', 'orderGameIdErr', gameId.length > 0)) return;
+    if (!validateField('orderPhone',  'orderPhoneErr',  phone.length >= 9)) return;
+    if (!selectedPaket) { showToast('Pilih paket terlebih dahulu!', 'error'); return; }
+
+    const buyerName = document.getElementById('orderBuyerName').value.trim() || 'Guest';
+    const session   = JSON.parse(localStorage.getItem('nexus_session') || 'null');
+    const orderHistory = JSON.parse(localStorage.getItem('nexus_orders') || '[]');
+    const resellerId = (session && session.role === 'reseller') ? session.email : null;
+
+    const newOrder = {
+      id: 'ORD-' + Date.now().toString().slice(-6),
+      date: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      userName: session ? session.name : buyerName,
+      userEmail: session ? session.email : 'guest@guest.com',
+      userPhone: phone,
+      resellerId: resellerId,
+      productName: currentOrderProduct.name,
+      paket: selectedPaket.name,
+      price: selectedPaket.value,
+      method: 'QRIS',
+      gameId: gameId,
+      status: 'Pending'
+    };
+    orderHistory.unshift(newOrder);
+    localStorage.setItem('nexus_orders', JSON.stringify(orderHistory));
+
+    document.getElementById('paymentProductName').textContent = currentOrderProduct.name;
+    document.getElementById('paymentProductPackage').textContent = selectedPaket.name;
+    document.getElementById('paymentPrice').textContent = formatRupiah(selectedPaket.value);
+    document.getElementById('paymentTotalAmount').textContent = formatRupiah(selectedPaket.value);
+    document.getElementById('paymentTransactionId').textContent = newOrder.id;
+    document.getElementById('paymentDate').textContent = new Date(newOrder.date).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('paymentStatus').textContent = 'PENDING';
+    document.getElementById('paymentStatus').className = 'status-pill status-pending';
+    document.getElementById('paymentLicenseKey').textContent = 'Menunggu konfirmasi pembayaran...';
+
+    showQrisCheckout({
+      product: currentOrderProduct.name,
+      paket: selectedPaket.name,
+      amount: selectedPaket.value,
+      orderId: newOrder.id
+    });
+    showToast('QR Pakasir sudah siap. Silakan scan untuk membayar.', 'success');
+  }
+
+  function showQrisCheckout({ product, paket, amount, orderId }) {
+    document.getElementById('orderFormSection').style.display = 'none';
+    document.getElementById('qrisSection').style.display = 'block';
+
+    const qrisImage = document.getElementById('qrisImage');
+    const qrisLink = document.getElementById('qrisLink');
+    const qrisPayload = buildQrisPayload({ orderId, amount });
+
+    if (!qrisImage) {
+      if (qrisLink) {
+        qrisLink.innerHTML = `<span>Terjadi kesalahan menampilkan QR. Coba muat ulang halaman.</span>`;
+      }
+      return;
+    }
+
+    qrisImage.style.opacity = '0';
+    qrisImage.onload = () => {
+      qrisImage.style.opacity = '1';
+      if (qrisLink) {
+        qrisLink.innerHTML = `<span>QR Pakasir berhasil dibuat. Scan dengan e-wallet atau mobile banking.</span>`;
+      }
+    };
+    qrisImage.onerror = function() {
+      this.onerror = null;
+      this.src = `https://chart.googleapis.com/chart?chs=260x260&cht=qr&chl=${encodeURIComponent(`Order:${orderId} Total:${formatRupiah(amount)}`)}`;
+      if (qrisLink) {
+        qrisLink.innerHTML = `<span>QR alternatif dibuat. Scan dengan kamera atau aplikasi QR.</span>`;
+      }
+    };
+    qrisImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(qrisPayload)}`;
+
+    if (qrisLink) {
+      qrisLink.innerHTML = `<span>Membuat QR Pakasir. Tunggu sebentar...</span>`;
+    }
+
+    startPaymentTimer(3600);
+  }
+
+  function buildQrisPayload({ orderId, amount }) {
+    const merchantName = 'JORSHH STORE';
+    const merchantCity = 'JAKARTA';
+    const merchantUrl = 'https://jorshh.com';
+    const amountString = amount.toString();
+    const merchantAccInfo = `00${String('ID.CO.QRIS.WWW'.length).padStart(2, '0')}ID.CO.QRIS.WWW` +
+      `01${String(merchantUrl.length).padStart(2, '0')}${merchantUrl}`;
+    const payload =
+      '000201' +
+      '010212' +
+      `26${String(merchantAccInfo.length).padStart(2, '0')}${merchantAccInfo}` +
+      '52045812' +
+      '5303986' +
+      `54${String(amountString.length).padStart(2, '0')}${amountString}` +
+      '5802ID' +
+      `59${String(merchantName.length).padStart(2, '0')}${merchantName}` +
+      `60${String(merchantCity.length).padStart(2, '0')}${merchantCity}` +
+      `62${String(5 + orderId.length).padStart(2, '0')}05${String(orderId.length).padStart(2, '0')}${orderId}` +
+      '6304';
+    return payload + calculateCrc16(payload);
+  }
+
+  function calculateCrc16(str) {
+    let crc = 0xFFFF;
+    const poly = 0x1021;
+    for (let i = 0; i < str.length; i++) {
+      crc ^= str.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) {
+        crc = (crc & 0x8000) ? ((crc << 1) ^ poly) : (crc << 1);
+        crc &= 0xFFFF;
+      }
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
+  }
+
+  function startPaymentTimer(seconds) {
+    stopPaymentTimer();
+    let remaining = Number(seconds);
+    if (Number.isNaN(remaining) || remaining < 0) remaining = 3600;
+
+    function updateDisplay(r) {
+      const h = Math.floor(r / 3600);
+      const m = Math.floor((r % 3600) / 60);
+      const s = r % 60;
+      const hEl = document.getElementById('timerHour');
+      const mEl = document.getElementById('timerMinute');
+      const sEl = document.getElementById('timerSecond');
+      if (hEl) hEl.textContent = String(h).padStart(2,'0');
+      if (mEl) mEl.textContent = String(m).padStart(2,'0');
+      if (sEl) sEl.textContent = String(s).padStart(2,'0');
+    }
+
+    updateDisplay(remaining);
+
+    paymentTimerInterval = setInterval(() => {
+      remaining -= 1;
+      updateDisplay(remaining);
+      if (remaining <= 0) {
+        stopPaymentTimer();
+        document.getElementById('paymentStatus').textContent = 'EXPIRED';
+        document.getElementById('paymentStatus').className = 'status-pill status-expired';
+        document.getElementById('paymentLicenseKey').textContent = 'Waktu pembayaran habis. Silakan coba lagi.';
+        const qrisLink = document.getElementById('qrisLink');
+        if (qrisLink) qrisLink.innerHTML = `<span>Waktu pembayaran habis. Tutup dan ulangi pesanan.</span>`;
+      }
+    }, 1000);
+  }
+
+  function stopPaymentTimer() {
+    if (paymentTimerInterval !== null) {
+      clearInterval(paymentTimerInterval);
+      paymentTimerInterval = null;
+    }
+  }
+
+  function formatTimer(seconds) {
+    const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const sec = (seconds % 60).toString().padStart(2, '0');
+    return `${min}:${sec}`;
+  }
+
+  function copyInvoiceId() {
+    const id = document.getElementById('paymentTransactionId').textContent.replace('📋','').trim();
+    navigator.clipboard.writeText(id).then(() => showToast('Invoice ID disalin!', 'success'));
+  }
+  function copyTotal() {
+    const total = document.getElementById('paymentTotalAmount').textContent.trim();
+    navigator.clipboard.writeText(total).then(() => showToast('Total harga disalin!', 'success'));
+  }
+
+  function cancelPayment() {
+    stopPaymentTimer();
+    closeModal('orderModal');
+    showToast('Pembayaran dibatalkan.', 'info');
+  }
+
+  function refreshAdminData() {
+    const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+    let orders = JSON.parse(localStorage.getItem('nexus_orders') || '[]');
+    
+    const totalSales = orders.reduce((acc, curr) => acc + (curr.price || 0), 0);
+    document.getElementById('adminTotalSales').textContent = formatRupiah(totalSales);
+    document.getElementById('adminTotalOrders').textContent = orders.length;
+    document.getElementById('adminTotalUsers').textContent = users.length;
+
+    renderResellerList();
+
+    const tbody = document.querySelector('#adminOrdersTable tbody');
+    if (orders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding: 2rem;">Belum ada pesanan masuk.</td></tr>`;
+      return;
+    }
+
+    orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    tbody.innerHTML = orders.map(o => {
+      const dateObj = new Date(o.date);
+      const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+      const statusClass = o.status === 'Success' ? 'status-success' : 'status-pending';
+      
+      const phoneRaw = (o.userPhone || '').replace(/\D/g, '');
+      const waNumber = phoneRaw.startsWith('0') ? '62' + phoneRaw.slice(1) : phoneRaw || null;
+
+      return `
+        <tr>
+          <td style="font-size:.8rem; color:var(--text-muted);">${dateStr}</td>
+          <td style="font-weight:600;">${o.userName}<br><span style="font-size:.7rem; color:var(--text-muted);">${o.userEmail}</span></td>
+          <td style="font-size:.85rem;">
+            ${o.userPhone ? `
+              <span style="color:var(--text-white); font-weight:600;">${o.userPhone}</span><br>
+              ${waNumber ? `<span onclick="hubungiPembeli('${waNumber}','${o.userName}','${o.productName}','${o.paket}','${formatRupiah(o.price)}','${o.id}')" style="font-size:.7rem; color:#4ade80; cursor:pointer; display:inline-flex; align-items:center; gap:.2rem; margin-top:.2rem;">📲 Hubungi WA</span>` : ''}
+            ` : `<span style="color:var(--text-muted); font-size:.75rem;">Tidak ada</span>`}
+          </td>
+          <td>${o.productName}<br><span style="font-size:.7rem; color:var(--accent-cyan);">${o.paket}</span></td>
+          <td style="font-family:'Orbitron';">${formatRupiah(o.price)}</td>
+          <td><span class="status-badge ${statusClass}">${o.status}</span></td>
+          <td style="text-align:center;">
+            <button class="btn-delete" onclick="deleteOrder('${o.id}')" title="Hapus History">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function hubungiPembeli(waNumber, nama, produk, paket, harga, orderId) {
+    const pesan = `Halo ${nama}, kami dari Jorshh Store ingin mengkonfirmasi pesanan kamu:\n\nProduk: ${produk}\nPaket: ${paket}\nTotal: ${harga}\nID Transaksi: ${orderId}\n\nMohon lakukan pembayaran segera. Terima kasih!`;
+    openWhatsApp(waNumber, pesan);
+  }
+
+  function openWhatsApp(number, message) {
+    const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function closeWarning() {
+    const overlay = document.getElementById('warningOverlay');
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity .4s ease';
+    setTimeout(() => overlay.style.display = 'none', 400);
+    sessionStorage.setItem('jorshh_warning_seen', '1');
+  }
+
+  // Kalau sudah pernah setuju di sesi ini, langsung sembunyikan
+  if (sessionStorage.getItem('jorshh_warning_seen')) {
+    document.getElementById('warningOverlay').style.display = 'none';
+  }
+
+  // ===================== HERO SLIDER =====================
+  let currentSlide = 0;
+  let slideTimer;
+  function goSlide(idx) {
+    currentSlide = idx;
+    const slides = document.getElementById('heroSlides');
+    if (slides) slides.style.transform = `translateX(-${idx * 100}%)`;
+    document.querySelectorAll('.hero-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+  function nextSlide() {
+    const total = document.querySelectorAll('.hero-slide').length;
+    goSlide((currentSlide + 1) % total);
+  }
+  function startSlider() {
+    slideTimer = setInterval(nextSlide, 4000);
+  }
+  document.addEventListener('DOMContentLoaded', () => { startSlider(); });
+  // fallback if DOMContentLoaded already fired
+  if (document.readyState !== 'loading') startSlider();
+
+  // ===================== PRODUCT SEARCH =====================
+  function searchProducts(query) {
+    const q = (query || '').toLowerCase().trim();
+    if (!q) { renderCards(products); return; }
+    const filtered = products.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.platform || '').toLowerCase().includes(q)
+    );
+    renderCards(filtered);
+  }
+
+  // ===================== SIDEBAR =====================
+  function openSidebar() {
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.getElementById('sidebarPanel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.getElementById('sidebarPanel').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ===================== TRACKING =====================
+  function doTracking() {
+    const query = (document.getElementById('trackingInput').value || '').trim().toLowerCase();
+    const noResult = document.getElementById('trackingNoResult');
+    const resultBox = document.getElementById('trackingResult');
+    const resultList = document.getElementById('trackingResultList');
+    const resultCount = document.getElementById('trackingResultCount');
+
+    noResult.classList.remove('show');
+    resultBox.classList.remove('show');
+    resultList.innerHTML = '';
+
+    if (!query) {
+      showToast('Masukkan ID Transaksi, Nama, atau No HP terlebih dahulu.', 'error');
+      return;
+    }
+
+    const orders = JSON.parse(localStorage.getItem('nexus_orders') || '[]');
+    const found = orders.filter(o => {
+      const id   = (o.id || '').toLowerCase();
+      const name = (o.userName || '').toLowerCase();
+      const phone= (o.userPhone || '').toLowerCase();
+      const email= (o.userEmail || '').toLowerCase();
+      return id.includes(query) || name.includes(query) || phone.includes(query) || email.includes(query);
+    });
+
+    if (found.length === 0) {
+      noResult.classList.add('show');
+      return;
+    }
+
+    resultCount.textContent = found.length;
+    resultList.innerHTML = found.map(o => {
+      const dateStr = new Date(o.date).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const statusColor = o.status === 'Success' ? '#4ade80' : o.status === 'Expired' ? '#ff6b9d' : '#fde047';
+      const statusBg    = o.status === 'Success' ? 'rgba(34,197,94,.12)' : o.status === 'Expired' ? 'rgba(255,45,120,.12)' : 'rgba(255,215,0,.12)';
+      return `
+        <div class="tracking-order-card">
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">ID Transaksi</span>
+            <span class="tracking-order-val" style="font-family:'Orbitron'; font-size:.78rem; color:var(--accent-cyan);">${o.id}</span>
+          </div>
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">Nama</span>
+            <span class="tracking-order-val">${o.userName}</span>
+          </div>
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">Produk</span>
+            <span class="tracking-order-val">${o.productName} — ${o.paket}</span>
+          </div>
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">Total</span>
+            <span class="tracking-order-val" style="color:#4ade80;">${formatRupiah(o.price)}</span>
+          </div>
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">Tanggal</span>
+            <span class="tracking-order-val" style="font-size:.8rem;">${dateStr}</span>
+          </div>
+          <div class="tracking-order-row">
+            <span class="tracking-order-key">Status</span>
+            <span class="tracking-order-val">
+              <span style="background:${statusBg}; color:${statusColor}; padding:.2rem .65rem; border-radius:6px; font-size:.78rem; font-weight:800; letter-spacing:.06em;">${o.status}</span>
+            </span>
+          </div>
+          ${o.licenseKey && o.status === 'Success' ? `
+          <div class="tracking-order-row" style="flex-direction:column; align-items:flex-start; gap:.35rem;">
+            <span class="tracking-order-key">License Key</span>
+            <span style="font-family:'Orbitron'; font-size:.75rem; color:var(--accent-cyan); word-break:break-all; background:rgba(0,229,255,.06); border:1px solid rgba(0,229,255,.15); border-radius:8px; padding:.5rem .75rem; width:100%;">${o.licenseKey}</span>
+          </div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    resultBox.classList.add('show');
+  }
+
+  function clearTrackingResult() {
+    document.getElementById('trackingNoResult').classList.remove('show');
+    document.getElementById('trackingResult').classList.remove('show');
+  }
+
+  renderCards(products);
+</script>
+
+</body>
+</html>
